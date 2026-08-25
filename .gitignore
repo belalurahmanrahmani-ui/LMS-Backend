@@ -1,0 +1,28 @@
+## .NET / Visual Studio
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+## Rider / VS code (in case used later)
+.idea/
+.vscode/
+
+## NuGet
+*.nupkg
+packages/
+
+## Sensitive configuration - NEVER commit real secrets
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+
+## Logs
+*.log
