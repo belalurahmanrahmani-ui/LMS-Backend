@@ -82,5 +82,18 @@ namespace LMS.Controllers
                 Role = rol
             });
         }
+        [Authorize(Roles ="Admin")]
+        [HttpGet("admin-only-test")]
+        public IActionResult AdminOnlyTest()
+        {
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            return Ok(new
+            {
+                message = "You are an Admin Authorization works men",
+                email = userEmail,
+                role = userRole
+            });
+        }
     }
 }
