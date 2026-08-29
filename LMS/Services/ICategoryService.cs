@@ -1,4 +1,5 @@
-﻿using LMS.DTOs.CategoryDto;
+﻿using LMS.API.Enums;
+using LMS.DTOs.CategoryDto;
 using LMS.Entities;
 
 namespace LMS.Services
@@ -9,6 +10,6 @@ namespace LMS.Services
         Task<CategoryResponseDto?> GetCategoryByIdAsync(int id);
         Task<CategoryResponseDto?> CreateCategoryAsync(CreateCategoryDto dto);
         Task<CategoryResponseDto> UpdateCategoryAsync(int id,UpdateCategoryDto dto);
-        Task<bool> DeletCategoryAsync(int id);
+        Task<CategoryDeleteResult> DeleteCategoryAsync(int id);
     }
 }

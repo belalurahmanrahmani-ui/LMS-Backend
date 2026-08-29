@@ -1,4 +1,5 @@
-﻿using LMS.Data;
+﻿using LMS.API.Enums;
+using LMS.Data;
 using LMS.DTOs.CategoryDto;
 using LMS.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -34,14 +35,19 @@ namespace LMS.Services
             };
         }
 
-        public async Task<bool> DeletCategoryAsync(int id)
+        public async Task<CategoryDeleteResult> DeleteCategoryAsync(int id)
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null)
-                return false;
+                return CategoryDeleteResult.NotFound;
+
+            bool hasCourses = await _context.Courses.AnyAsync(c => c.CategoryId == id);
+            if (hasCourses)
+                return CategoryDeleteResult.HasDependentCourses;
+
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
-            return true;
+            return CategoryDeleteResult.Success;
         }
 
         public async Task<List<CategoryResponseDto>> GetAllCategoryAsync()

@@ -1,4 +1,5 @@
-﻿using LMS.DTOs.CategoryDto;
+﻿using LMS.API.Enums;
+using LMS.DTOs.CategoryDto;
 using LMS.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -79,22 +80,19 @@ namespace LMS.Controllers
                 
             }
         }
-        [Authorize(Roles ="Admin")]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategoy(int id)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteCategory(int id)
         {
-            try
-            {
-                var deleted = await _categoryService.DeletCategoryAsync(id);
-                if (!deleted)
-                    return NotFound(new { message = "Category not found" });
-                return NoContent();
-            }
-            catch (DbUpdateException)
-            {
+            var result = await _categoryService.DeleteCategoryAsync(id);
 
-                return Conflict(new { message = "conot this category because courses are linked to in" });
-            }
+            return result switch
+            {
+                CategoryDeleteResult.NotFound => NotFound($"Category with Id {id} not found."),
+                CategoryDeleteResult.HasDependentCourses => Conflict("Cannot delete this category because one or more courses are assigned to it."),
+                CategoryDeleteResult.Success => NoContent(),
+                _ => StatusCode(500, "An unexpected error occurred.")
+            };
         }
     }
 }
