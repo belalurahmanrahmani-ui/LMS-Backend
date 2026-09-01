@@ -85,7 +85,7 @@ namespace LMS.Controllers
 
         }
 
-        [HttpPatch("publish")]
+        [HttpPatch("{id}/publish")]
         [Authorize(Roles ="Teacher")]
         public async Task<IActionResult> PublishCourse(int id)
         {

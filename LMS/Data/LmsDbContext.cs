@@ -32,20 +32,36 @@ namespace LMS.Data
 
             /// ======= Course =======
 
+            //modelBuilder.Entity<Course>(entity =>
+            //{
+            //    /// Teacher -> Courses (one - to - Many)
+            //    entity.HasOne(c => c.Teacher)
+            //          .WithMany(u => u.Course)
+            //          .OnDelete(DeleteBehavior.Restrict); // که استاد دلیت شی خو کورسونه یی نباید دلیت شی
+            //    // Category \-> Courses (one - to - Many)
+
+            //    entity.HasOne(c => c.Teacher)
+            //          .WithMany(u => u.Course)
+            //          .HasForeignKey(c => c.TeacherId)
+            //          .OnDelete(DeleteBehavior.Restrict);// که کتګوری دلیت شی خو کورسونه یی نیاید دلیت شی
+            //    entity.Property(c => c.Price).HasColumnType("decimal(10,2)");// د قیمت لپاره د اعشاری دقت 
+
+            //});
             modelBuilder.Entity<Course>(entity =>
             {
-                /// Teacher -> Courses (one - to - Many)
-                entity.HasOne(c => c.Teacher)
-                      .WithMany(u => u.Course)
-                      .OnDelete(DeleteBehavior.Restrict); // که استاد دلیت شی خو کورسونه یی نباید دلیت شی
-                // Category \-> Courses (one - to - Many)
-
+                // Teacher -> Courses (One-to-Many)
                 entity.HasOne(c => c.Teacher)
                       .WithMany(u => u.Course)
                       .HasForeignKey(c => c.TeacherId)
-                      .OnDelete(DeleteBehavior.Restrict);// که کتګوری دلیت شی خو کورسونه یی نیاید دلیت شی
-                entity.Property(c => c.Price).HasColumnType("decimal(10,2)");// د قیمت لپاره د اعشاری دقت 
+                      .OnDelete(DeleteBehavior.Restrict);
 
+                // Category -> Courses (One-to-Many)
+                entity.HasOne(c => c.Category)
+                      .WithMany(cat => cat.Courses)
+                      .HasForeignKey(c => c.CategoryId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(c => c.Price).HasColumnType("decimal(10,2)");
             });
 
             /// ======= Lesson =======
@@ -100,7 +116,8 @@ namespace LMS.Data
             modelBuilder.Entity<Material>(enity => {
                 enity.HasOne(m => m.Lesson)
                      .WithMany(l => l.Materials)
-                     .HasForeignKey(m => m.LessonId); // که درس دلیت شو نو متریال دی هم دلیت شی 
+                     .HasForeignKey(m => m.LessonId)
+                     .OnDelete(DeleteBehavior.Cascade); ; // که درس دلیت شو نو متریال دی هم دلیت شی 
 
             });
 
