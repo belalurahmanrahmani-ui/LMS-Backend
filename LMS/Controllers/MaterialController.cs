@@ -1,6 +1,6 @@
 ﻿using LMS.DTOs.Material;
 using LMS.Enums;
-using LMS.Services;
+using LMS.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

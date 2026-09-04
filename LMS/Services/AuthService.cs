@@ -2,6 +2,7 @@
 using LMS.DTOs.Auth;
 using LMS.Entities;
 using LMS.Helpers;
+using LMS.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic;

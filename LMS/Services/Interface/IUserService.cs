@@ -1,7 +1,7 @@
 ﻿using LMS.DTOs;
 using LMS.Entities;
 
-namespace LMS.Services
+namespace LMS.Services.Interface
 {
     public interface IUserService
     {

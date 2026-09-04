@@ -1,6 +1,6 @@
 ﻿using LMS.DTOs.Auth;
 
-namespace LMS.Services
+namespace LMS.Services.Interface
 {
     public interface IAuthService
     {

@@ -1,6 +1,6 @@
 ﻿using LMS.API.Enums;
 using LMS.DTOs.CategoryDto;
-using LMS.Services;
+using LMS.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

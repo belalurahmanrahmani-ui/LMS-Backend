@@ -2,7 +2,7 @@
 using LMS.DTOs.CategoryDto;
 using LMS.Entities;
 
-namespace LMS.Services
+namespace LMS.Services.Interface
 {
     public interface ICategoryService
     {

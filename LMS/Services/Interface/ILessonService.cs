@@ -1,7 +1,7 @@
 ﻿using LMS.DTOs.Lesson;
 using LMS.Enums;
 
-namespace LMS.Services
+namespace LMS.Services.Interface
 {
     public interface ILessonService
     {

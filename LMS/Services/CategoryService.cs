@@ -2,6 +2,7 @@
 using LMS.Data;
 using LMS.DTOs.CategoryDto;
 using LMS.Entities;
+using LMS.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Services

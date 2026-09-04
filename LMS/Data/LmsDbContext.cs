@@ -130,6 +130,11 @@ namespace LMS.Data
                      .OnDelete(DeleteBehavior.Cascade); //  که یوزر دلیت شی نو توکن دی هم دلیت شی 
 
             });
+             
+            // ===== For Payment =====
+            //modelBuilder.Entity<Enrollment>()
+            //.HasIndex(e => new { e.StudentId, e.CourseId })
+            //.IsUnique();
         }
     }
 }

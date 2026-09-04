@@ -2,6 +2,7 @@
 using LMS.DTOs.Material;
 using LMS.Entities;
 using LMS.Enums;
+using LMS.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Services

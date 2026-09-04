@@ -1,5 +1,5 @@
 ﻿using LMS.DTOs.Auth;
-using LMS.Services;
+using LMS.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
