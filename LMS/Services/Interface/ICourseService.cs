@@ -5,7 +5,7 @@ namespace LMS.Services.Interface
 {
     public interface ICourseService
     {
-        Task<List<CourseResponseDto>> GetAllCoursesAsync();
+        Task<List<CourseResponseDto>> GetAllCoursesAsync(CourseFilterDto filter);
         Task<CourseResponseDto> GetCourseByIdAsync(int id);
         Task<List<CourseResponseDto>> GetMyCoursesAsync(int teacherId);
 
@@ -14,5 +14,6 @@ namespace LMS.Services.Interface
         Task<CourseOperationResult> DeleteCourseAsync(int id, int teacherId);
         Task<CourseOperationResult> PublishCourseAsync(int id, int teacherId);
         Task<CourseOperationResult> UnpublishCourseAsync(int id, int teacherId);
+        Task<CourseDetailsDto?> GetCourseDetailsAsync(int id);
     }
 }

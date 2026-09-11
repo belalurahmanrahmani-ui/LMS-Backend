@@ -1,5 +1,5 @@
 ﻿using LMS.DTOs;
-using LMS.Entities;
+using LMS.Enums;
 
 namespace LMS.Services.Interface
 {

@@ -1,6 +1,7 @@
 ﻿using LMS.Data;
 using LMS.DTOs.Auth;
 using LMS.Entities;
+using LMS.Enums;
 using LMS.Helpers;
 using LMS.Services.Interface;
 using Microsoft.EntityFrameworkCore;

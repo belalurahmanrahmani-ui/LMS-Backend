@@ -1,4 +1,4 @@
-﻿namespace LMS.Entities
+﻿namespace LMS.Enums
 {
     public enum UserRole
     {

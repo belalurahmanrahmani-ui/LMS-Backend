@@ -1,6 +1,6 @@
 ﻿using LMS.Data;
 using LMS.DTOs;
-using LMS.Entities;
+using LMS.Enums;
 using LMS.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 

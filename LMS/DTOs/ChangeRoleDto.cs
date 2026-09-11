@@ -1,4 +1,4 @@
-﻿using LMS.Entities;
+﻿using LMS.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace LMS.DTOs
