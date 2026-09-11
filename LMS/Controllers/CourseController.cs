@@ -20,16 +20,16 @@ namespace LMS.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllCourse()
+        public async Task<IActionResult> GetAllCourse([FromQuery] CourseFilterDto filter)
         {
-            var course = await _courseService.GetAllCoursesAsync();
+            var course = await _courseService.GetAllCoursesAsync(filter);
             return Ok(course);
         }
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetCourseById(int id)
         {
-            var course = await _courseService.GetCourseByIdAsync(id);
+            var course = await _courseService.GetCourseDetailsAsync(id);
             if (course == null)
                 return NotFound(new { message = "Course not found" });
             return Ok(course);

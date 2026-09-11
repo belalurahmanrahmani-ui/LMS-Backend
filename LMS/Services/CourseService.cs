@@ -18,9 +18,6 @@ namespace LMS.Services
         }
         public async Task<(CourseOperationResult Result, CourseResponseDto? Course)> CreateCourseAsync(CreateCourseDto dto, int teacherId)
         {
-            //bool categoryExists = await _context.Categories.AnyAsync(c => c.Id == dto.CategoryId);
-            //if (!categoryExists)
-            //    return (CourseOperationResult.InvalidCategor, null);
             bool categoyExist = await _context.Categories.AnyAsync(c => c.Id == dto.CategoryId);
             if (!categoyExist)
             {
@@ -57,12 +54,7 @@ namespace LMS.Services
             return CourseOperationResult.Sucses;
         }
 
-        public async Task<List<CourseResponseDto>> GetAllCoursesAsync()
-        {
-            return await _context.Courses
-                .Select(ProjectToDto)
-                .ToListAsync();
-        }
+        
 
         public async Task<CourseResponseDto?> GetCourseByIdAsync(int id)
         {
@@ -131,6 +123,71 @@ namespace LMS.Services
             return CourseOperationResult.Sucses;
         }
 
+        public async Task<List<CourseResponseDto>> GetAllCoursesAsync(CourseFilterDto filter)
+        {
+            var query = _context.Courses
+                .Where(c => c.IsPublished);
+
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+            {
+                query = query.Where(c => c.Title.Contains(filter.Search));
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.Category))
+            {
+                query = query.Where(c => c.Category.Name.ToLower() == filter.Category.ToLower());
+            }
+
+            if (filter.IsFree.HasValue)
+            {
+                query = filter.IsFree.Value
+                    ? query.Where(c => c.Price == 0)
+                    : query.Where(c => c.Price > 0);
+            }
+
+            return await query
+                .Select(ProjectToDto)
+                .ToListAsync();
+        }
+
+        public async Task<CourseDetailsDto?> GetCourseDetailsAsync(int id)
+        {
+            var course = await _context.Courses
+                .Where(c => c.Id == id && c.IsPublished)
+                .Include(c => c.Teacher)
+                .Include(c => c.Category)
+                .Include(c => c.Lessons)
+                .FirstOrDefaultAsync();
+            if (course == null)
+                return null;
+            var publishedLessons = course.Lessons
+                .Where(l => l.IsPublished)
+                .OrderBy(l => l.Order)
+                .ToList();
+            var enrollmentCount = await _context.Enrollments
+                .CountAsync(e => e.CourseId == id);
+            return new CourseDetailsDto
+            {
+                Id = course.Id,
+                Title = course.Title,
+                Description = course.Description,
+                Thumbnail = course.Thumbnail,
+                Price = course.Price,
+                TeacherName = course.Teacher.FullName,
+                CategoryName = course.Category.Name,
+                LessonCount = publishedLessons.Count,
+                TotalDuration = publishedLessons.Sum(l => l.Duration),
+                EnrollmentCount = enrollmentCount,
+                Lessons = publishedLessons.Select(l => new LessonSummaryDto
+                {
+                    Id = l.Id,
+                    Title = l.Title,
+                    Duration = l.Duration,
+                    Order = l.Order
+                }).ToList()
+            };
+
+        }
 
         private static readonly Expression<Func<Course, CourseResponseDto>> ProjectToDto = c => new CourseResponseDto
         {

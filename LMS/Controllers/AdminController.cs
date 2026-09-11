@@ -1,4 +1,5 @@
 ﻿using LMS.DTOs;
+using LMS.DTOs.Admin;
 using LMS.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -13,13 +14,15 @@ namespace LMS.Controllers
     [Authorize(Roles ="Admin")]
     public class AdminController : ControllerBase
     {
-        private readonly IUserService _userService;
-        public AdminController(IUserService userService)
+        private readonly IUserService _userService ;
+        private readonly IAdminDashboardService _adminService ;
+        public AdminController(IUserService userService,IAdminDashboardService adminDashboard)
         {
             _userService = userService; 
+            _adminService = adminDashboard;
         }
 
-        [HttpPut("users{id}")]
+        [HttpPut("users/{id}")]
         public async Task <IActionResult> UpdateUserAsync(int id, [FromBody] UpdateUserDto dto)
         {
             if(!ModelState.IsValid)
@@ -115,6 +118,15 @@ namespace LMS.Controllers
                 return NotFound(new { message = "User not found" });
             return Ok(new { message = $"User role changed to {dto.Role} successfully ." });
         }
+        [HttpGet("dashboard")]
+        [ProducesResponseType(typeof(AdminDashboardDto),StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAdminDashboard()
+        {
+            var result = await _adminService.GetAdminDashboardAsync();
+            return Ok(result);
+        }
+
+
 
     }
 }

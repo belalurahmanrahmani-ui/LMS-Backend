@@ -1,4 +1,6 @@
-﻿namespace LMS.Entities
+﻿using LMS.Enums;
+
+namespace LMS.Entities
 {
     public class User
     {

@@ -29,24 +29,6 @@ namespace LMS.Data
                 entity.Property(u => u.Role).HasConversion<int>(); // په عدد باید ذخیره شی 
             });
 
-
-            /// ======= Course =======
-
-            //modelBuilder.Entity<Course>(entity =>
-            //{
-            //    /// Teacher -> Courses (one - to - Many)
-            //    entity.HasOne(c => c.Teacher)
-            //          .WithMany(u => u.Course)
-            //          .OnDelete(DeleteBehavior.Restrict); // که استاد دلیت شی خو کورسونه یی نباید دلیت شی
-            //    // Category \-> Courses (one - to - Many)
-
-            //    entity.HasOne(c => c.Teacher)
-            //          .WithMany(u => u.Course)
-            //          .HasForeignKey(c => c.TeacherId)
-            //          .OnDelete(DeleteBehavior.Restrict);// که کتګوری دلیت شی خو کورسونه یی نیاید دلیت شی
-            //    entity.Property(c => c.Price).HasColumnType("decimal(10,2)");// د قیمت لپاره د اعشاری دقت 
-
-            //});
             modelBuilder.Entity<Course>(entity =>
             {
                 // Teacher -> Courses (One-to-Many)
@@ -130,11 +112,7 @@ namespace LMS.Data
                      .OnDelete(DeleteBehavior.Cascade); //  که یوزر دلیت شی نو توکن دی هم دلیت شی 
 
             });
-             
-            // ===== For Payment =====
-            //modelBuilder.Entity<Enrollment>()
-            //.HasIndex(e => new { e.StudentId, e.CourseId })
-            //.IsUnique();
+
         }
     }
 }
