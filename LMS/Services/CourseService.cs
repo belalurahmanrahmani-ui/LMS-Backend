@@ -52,6 +52,11 @@ namespace LMS.Services
             return CourseOperationResult.Sucses;
         }
 
+<<<<<<< HEAD
+=======
+        
+
+>>>>>>> edbfb03e8b76ab0e31d5edac967d6201e59d79cc
         public async Task<CourseResponseDto?> GetCourseByIdAsync(int id)
         {
             return await _context.Courses
@@ -182,6 +187,10 @@ namespace LMS.Services
                     Order = l.Order
                 }).ToList()
             };
+<<<<<<< HEAD
+=======
+
+>>>>>>> edbfb03e8b76ab0e31d5edac967d6201e59d79cc
         }
 
         private static readonly Expression<Func<Course, CourseResponseDto>> ProjectToDto = c => new CourseResponseDto
