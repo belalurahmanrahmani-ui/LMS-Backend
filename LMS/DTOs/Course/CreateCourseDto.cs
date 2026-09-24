@@ -12,6 +12,7 @@ namespace LMS.DTOs.Course
         [StringLength(2000, MinimumLength = 10)]
         public string Description { get; set; } = string.Empty;
 
+        [Url(ErrorMessage = "Thumbnail must be a valid URL")]
         public string? Thumbnail { get; set; }
 
         [Range(0, double.MaxValue, ErrorMessage = "Price cannot be negative.")]

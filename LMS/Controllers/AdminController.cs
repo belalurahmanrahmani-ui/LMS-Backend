@@ -41,7 +41,7 @@ namespace LMS.Controllers
 
         }
 
-        /// this is just for testing purpose, in real application we will have more admin functionalities like managing courses, lessons, categories, etc.
+       
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers()
         {

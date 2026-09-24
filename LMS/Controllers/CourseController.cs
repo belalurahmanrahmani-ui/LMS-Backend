@@ -15,7 +15,7 @@ namespace LMS.Controllers
         private readonly ICourseService _courseService;
         public CourseController(ICourseService courseService)
         {
-            _courseService = courseService; 
+            _courseService = courseService;
         }
 
         [HttpGet]
@@ -25,6 +25,7 @@ namespace LMS.Controllers
             var course = await _courseService.GetAllCoursesAsync(filter);
             return Ok(course);
         }
+
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetCourseById(int id)
@@ -34,30 +35,34 @@ namespace LMS.Controllers
                 return NotFound(new { message = "Course not found" });
             return Ok(course);
         }
+
         [HttpGet("my-course")]
-        [Authorize(Roles ="Teacher")]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> GetMyCourse()
         {
             int teacherId = GetCurrentUserId();
             var course = await _courseService.GetMyCoursesAsync(teacherId);
-            return Ok(course); 
+            return Ok(course);
         }
+
         [HttpPost]
-        [Authorize(Roles ="Teacher")]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> CreateCourse([FromBody] CreateCourseDto dto)
         {
             int teacherId = GetCurrentUserId();
             var (result, course) = await _courseService.CreateCourseAsync(dto, teacherId);
             if (result == CourseOperationResult.InvalidCategor)
                 return BadRequest(new { message = "invalid category id" });
-            return CreatedAtAction(nameof(GetCourseById), new {id = course!.Id},course);
+            return CreatedAtAction(nameof(GetCourseById), new { id = course!.Id }, course);
         }
+
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> DeleteCourse(int id)
         {
             int teacherId = GetCurrentUserId();
-            var result = await _courseService.DeleteCourseAsync(id, teacherId);
+            bool isAdmin = IsCurrentUserAdmin();
+            var result = await _courseService.DeleteCourseAsync(id, teacherId, isAdmin);
 
             return result switch
             {
@@ -67,31 +72,15 @@ namespace LMS.Controllers
                 _ => StatusCode(500, new { message = "An unexpected error occurred." })
             };
         }
+
         [HttpPut("{id}")]
-        [Authorize(Roles ="Teacher")]
-        public async Task<IActionResult> UpdateCourse(int id, [FromBody] UpdateCourseDto dto) {
-
-            int teacherId = GetCurrentUserId();
-            var result = await _courseService.UpdateCourseAsync(id, dto, teacherId);
-
-            return result switch
-            {
-                CourseOperationResult.NotFound => NotFound(new { message = "Course not found" }),
-                CourseOperationResult.Forbidden =>Forbid(),
-                CourseOperationResult.InvalidCategor => BadRequest(new {message="invlid category"}),
-                CourseOperationResult.Sucses => NoContent(),
-                _ => StatusCode(500,new {message = "an unexpected error ocured"})
-            };
-
-        }
-
-        [HttpPatch("{id}/publish")]
-        [Authorize(Roles ="Teacher")]
-        public async Task<IActionResult> PublishCourse(int id)
+        [Authorize(Roles = "Teacher,Admin")]
+        public async Task<IActionResult> UpdateCourse(int id, [FromBody] UpdateCourseDto dto)
         {
             int teacherId = GetCurrentUserId();
-            var result =  await _courseService.PublishCourseAsync(id,teacherId);
-            
+            bool isAdmin = IsCurrentUserAdmin();
+            var result = await _courseService.UpdateCourseAsync(id, dto, teacherId, isAdmin);
+
             return result switch
             {
                 CourseOperationResult.NotFound => NotFound(new { message = "Course not found" }),
@@ -101,12 +90,32 @@ namespace LMS.Controllers
                 _ => StatusCode(500, new { message = "an unexpected error ocured" })
             };
         }
+
+        [HttpPatch("{id}/publish")]
+        [Authorize(Roles = "Teacher,Admin")]
+        public async Task<IActionResult> PublishCourse(int id)
+        {
+            int teacherId = GetCurrentUserId();
+            bool isAdmin = IsCurrentUserAdmin();
+            var result = await _courseService.PublishCourseAsync(id, teacherId, isAdmin);
+
+            return result switch
+            {
+                CourseOperationResult.NotFound => NotFound(new { message = "Course not found" }),
+                CourseOperationResult.Forbidden => Forbid(),
+                CourseOperationResult.InvalidCategor => BadRequest(new { message = "invlid category" }),
+                CourseOperationResult.Sucses => NoContent(),
+                _ => StatusCode(500, new { message = "an unexpected error ocured" })
+            };
+        }
+
         [HttpPatch("{id}/unpublish")]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> UnpublishCourse(int id)
         {
             int teacherId = GetCurrentUserId();
-            var result = await _courseService.UnpublishCourseAsync(id, teacherId);
+            bool isAdmin = IsCurrentUserAdmin();
+            var result = await _courseService.UnpublishCourseAsync(id, teacherId, isAdmin);
 
             return result switch
             {
@@ -121,6 +130,11 @@ namespace LMS.Controllers
         {
             var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return int.Parse(idClaim!);
+        }
+
+        private bool IsCurrentUserAdmin()
+        {
+            return User.IsInRole("Admin");
         }
     }
 }

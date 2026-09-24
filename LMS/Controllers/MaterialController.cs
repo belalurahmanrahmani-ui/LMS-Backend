@@ -51,11 +51,12 @@ namespace LMS.Controllers
         }
 
         [HttpPut("/api/materials/{id}")]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> UpdateMaterial(int id, [FromBody] UpdateMaterialDto dto)
         {
             int teacherId = GetCurrentUserId();
-            var result = await _materialService.UpdateMaterialAsync(id, dto, teacherId);
+            bool isAdmin = IsCurrentUserAdmin();
+            var result = await _materialService.UpdateMaterialAsync(id, dto, teacherId, isAdmin);
 
             return result switch
             {
@@ -67,11 +68,12 @@ namespace LMS.Controllers
         }
 
         [HttpDelete("/api/materials/{id}")]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> DeleteMaterial(int id)
         {
             int teacherId = GetCurrentUserId();
-            var result = await _materialService.DeleteMaterialAsync(id, teacherId);
+            bool isAdmin = IsCurrentUserAdmin();
+            var result = await _materialService.DeleteMaterialAsync(id, teacherId, isAdmin);
 
             return result switch
             {
@@ -86,6 +88,11 @@ namespace LMS.Controllers
         {
             var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return int.Parse(idClaim!);
+        }
+
+        private bool IsCurrentUserAdmin()
+        {
+            return User.IsInRole("Admin");
         }
     }
 }

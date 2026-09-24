@@ -13,10 +13,10 @@ namespace LMS.DTOs.Lesson
         [Url]
         public string? VideoUrl { get; set; }
 
-        [Range(0, int.MaxValue)]
+        [Range(1, 600, ErrorMessage = "Duration must be between 1 and 600 minutes.")]
         public int Duration { get; set; }
 
-        [Range(0, int.MaxValue)]
+        [Range(0, int.MaxValue, ErrorMessage = "Order cannot be negative.")]
         public int Order { get; set; }
     }
 }

@@ -5,7 +5,6 @@ using LMS.Enums;
 using LMS.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-//using System.Linq.Expressions;
 
 namespace LMS.Services
 {
@@ -23,7 +22,7 @@ namespace LMS.Services
             {
                 return (CourseOperationResult.InvalidCategor, null);
             }
-            var course =  new Course
+            var course = new Course
             {
                 Title = dto.Title,
                 Description = dto.Description,
@@ -38,23 +37,20 @@ namespace LMS.Services
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
             var createdCourse = await GetCourseByIdAsync(course.Id);
-            return(CourseOperationResult.Sucses, createdCourse);
+            return (CourseOperationResult.Sucses, createdCourse);
         }
 
-
-        public async Task<CourseOperationResult> DeleteCourseAsync(int id, int teacherId)
+        public async Task<CourseOperationResult> DeleteCourseAsync(int id, int teacherId, bool isAdmin)
         {
             var course = await _context.Courses.FindAsync(id);
             if (course == null)
                 return CourseOperationResult.NotFound;
-            if (course.TeacherId != teacherId)
+            if (!isAdmin && course.TeacherId != teacherId)
                 return CourseOperationResult.Forbidden;
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
             return CourseOperationResult.Sucses;
         }
-
-        
 
         public async Task<CourseResponseDto?> GetCourseByIdAsync(int id)
         {
@@ -72,13 +68,13 @@ namespace LMS.Services
                 .ToListAsync();
         }
 
-        public async Task<CourseOperationResult> PublishCourseAsync(int id, int teacherId)
+        public async Task<CourseOperationResult> PublishCourseAsync(int id, int teacherId, bool isAdmin)
         {
             var course = await _context.Courses.FindAsync(id);
             if (course == null)
                 return CourseOperationResult.NotFound;
 
-            if (course.TeacherId != teacherId)
+            if (!isAdmin && course.TeacherId != teacherId)
                 return CourseOperationResult.Forbidden;
 
             course.IsPublished = true;
@@ -87,13 +83,13 @@ namespace LMS.Services
             return CourseOperationResult.Sucses;
         }
 
-        public async Task<CourseOperationResult> UnpublishCourseAsync(int id, int teacherId)
+        public async Task<CourseOperationResult> UnpublishCourseAsync(int id, int teacherId, bool isAdmin)
         {
             var course = await _context.Courses.FindAsync(id);
             if (course == null)
                 return CourseOperationResult.NotFound;
 
-            if (course.TeacherId != teacherId)
+            if (!isAdmin && course.TeacherId != teacherId)
                 return CourseOperationResult.Forbidden;
 
             course.IsPublished = false;
@@ -102,12 +98,12 @@ namespace LMS.Services
             return CourseOperationResult.Sucses;
         }
 
-        public async Task<CourseOperationResult> UpdateCourseAsync(int id, UpdateCourseDto dto, int teacherId)
+        public async Task<CourseOperationResult> UpdateCourseAsync(int id, UpdateCourseDto dto, int teacherId, bool isAdmin)
         {
             var course = await _context.Courses.FindAsync(id);
             if (course == null)
                 return CourseOperationResult.NotFound;
-            if (course.TeacherId != teacherId)
+            if (!isAdmin && course.TeacherId != teacherId)
                 return CourseOperationResult.Forbidden;
             bool categoryExist = await _context.Categories.AnyAsync(c => c.Id == dto.CategoryId);
             if (!categoryExist)
@@ -186,7 +182,6 @@ namespace LMS.Services
                     Order = l.Order
                 }).ToList()
             };
-
         }
 
         private static readonly Expression<Func<Course, CourseResponseDto>> ProjectToDto = c => new CourseResponseDto

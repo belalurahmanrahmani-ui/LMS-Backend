@@ -33,19 +33,19 @@ namespace LMS.Services
             _context.Materials.Add(material);
             await _context.SaveChangesAsync();
             var createdMaterial = await GetMaterialByIdAsync(material.Id);
-            return (MaterialOperationResult.Success,createdMaterial);
+            return (MaterialOperationResult.Success, createdMaterial);
         }
 
 
-        public async Task<MaterialOperationResult> DeleteMaterialAsync(int id, int teacherId)
+        public async Task<MaterialOperationResult> DeleteMaterialAsync(int id, int teacherId, bool isAdmin)
         {
             var material = await _context.Materials
                 .Include(m => m.Lesson)
                     .ThenInclude(l => l.Course)
                         .FirstOrDefaultAsync(m => m.Id == id);
-            if(material == null) 
+            if (material == null)
                 return MaterialOperationResult.NotFound;
-            if (material.Lesson.Course.TeacherId != teacherId)
+            if (!isAdmin && material.Lesson.Course.TeacherId != teacherId)
                 return MaterialOperationResult.Forbidden;
             _context.Materials.Remove(material);
             await _context.SaveChangesAsync();
@@ -68,7 +68,7 @@ namespace LMS.Services
                 .ToListAsync();
         }
 
-        public async Task<MaterialOperationResult> UpdateMaterialAsync(int id, UpdateMaterialDto dto, int teacherId)
+        public async Task<MaterialOperationResult> UpdateMaterialAsync(int id, UpdateMaterialDto dto, int teacherId, bool isAdmin)
         {
             var material = await _context.Materials
                 .Include(m => m.Lesson)
@@ -76,7 +76,7 @@ namespace LMS.Services
                         .FirstOrDefaultAsync(m => m.Id == id);
             if (material == null)
                 return MaterialOperationResult.NotFound;
-            if (material.Lesson.Course.TeacherId != teacherId)
+            if (!isAdmin && material.Lesson.Course.TeacherId != teacherId)
                 return MaterialOperationResult.Forbidden;
 
             material.FileName = dto.FileName;
@@ -84,9 +84,6 @@ namespace LMS.Services
             material.FileType = dto.FileType;
             await _context.SaveChangesAsync();
             return MaterialOperationResult.Success;
-
-
-
         }
 
         private static readonly System.Linq.Expressions.Expression<Func<Material, MaterialResponseDto>> ProjectToDto = m => new MaterialResponseDto

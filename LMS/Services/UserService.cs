@@ -45,7 +45,7 @@ namespace LMS.Services
                     FullName = u.FullName,
                     Email = u.Email,
                     Role = u.Role.ToString(),
-                    ProfileImag = u.ProfileImage,
+                    ProfileImage = u.ProfileImage,
                     IsActive = u.IsActive,
                     CreatedAt = u.CreatedAt
                 }).ToListAsync();
@@ -65,7 +65,7 @@ namespace LMS.Services
                     FullName = u.FullName,
                     Email = u.Email,
                     Role = u.Role.ToString(),
-                    ProfileImag = u.ProfileImage,
+                    ProfileImage = u.ProfileImage,
                     IsActive = u.IsActive,
                     CreatedAt = u.CreatedAt
                 }).FirstOrDefaultAsync();
@@ -106,7 +106,7 @@ namespace LMS.Services
                 FullName = user.FullName,
                 Email = user.Email,
                 Role = user.Role.ToString(),
-                ProfileImag = user.ProfileImage,
+                ProfileImage = user.ProfileImage,
                 IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt
             };

@@ -1,3 +1,4 @@
+using LMS.API.Middleware;
 using LMS.Data;
 using LMS.Helpers;
 using LMS.Services;
@@ -33,7 +34,7 @@ builder.Services.AddScoped<IStudentDashboardService, StudentDashboardService>();
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new Microsoft.OpenApi.OpenApiInfo
@@ -83,22 +84,63 @@ builder.Services.AddAuthentication(options =>
     };
 
 });
+var allowedOrigins = new[]
+{
+    "http://localhost:3000",   // Next.js در حالت Development
+    // بعداً در Day 10، آدرس Production اینجا اضافه می‌شه
+};
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("LmsCorsPolicy", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
+
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("LmsCorsPolicy");   // 👈 اینجا، قبل از Authentication/Authorization
+
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 
 app.MapControllers();
 
 app.Run();
+
+//var app = builder.Build();
+//app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+//// Configure the HTTP request pipeline.
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//    app.MapOpenApi();
+//}
+
+//app.UseHttpsRedirection();
+//app.UseAuthentication();
+//app.UseAuthorization();
+
+//app.MapControllers();
+
+//app.Run();

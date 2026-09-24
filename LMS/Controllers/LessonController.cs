@@ -7,14 +7,14 @@ using System.Security.Claims;
 
 namespace LMS.Controllers
 {
-    
+
     [ApiController]
     public class LessonController : ControllerBase
     {
         private readonly ILessonService _lessonService;
         public LessonController(ILessonService lessonService)
         {
-            _lessonService = lessonService; 
+            _lessonService = lessonService;
         }
         [HttpGet("/api/courses/{courseId}/lessons")]
         [AllowAnonymous]
@@ -34,11 +34,11 @@ namespace LMS.Controllers
         }
 
         [HttpPost("/api/courses/{courseId}/lessons")]
-        [Authorize(Roles ="Teacher")]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> CreateLesson(int courseId, [FromBody] CreateLessonDto dto)
         {
             int teacherId = GetCurrentUserId();
-            var (result , lesson) = await _lessonService.CreateLessonAsync(courseId, dto,teacherId) ;
+            var (result, lesson) = await _lessonService.CreateLessonAsync(courseId, dto, teacherId);
             return result switch
             {
                 Enums.LessonOperationResult.CourseNotFound => NotFound(new { message = "Course Not Found" }),
@@ -50,11 +50,12 @@ namespace LMS.Controllers
         }
 
         [HttpPut("/api/lessons/{id}")]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> UpdateLesson(int id, [FromBody] UpdateLessonDto dto)
         {
             int teacherId = GetCurrentUserId();
-            var result = await _lessonService.UpdateLessonAsync(id, dto, teacherId);
+            bool isAdmin = IsCurrentUserAdmin();
+            var result = await _lessonService.UpdateLessonAsync(id, dto, teacherId, isAdmin);
             return result switch
             {
                 Enums.LessonOperationResult.NotFound => NotFound(new { message = "Lesson not found" }),
@@ -66,11 +67,12 @@ namespace LMS.Controllers
         }
 
         [HttpDelete("/api/lessons/{id}")]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> DeleteLesson(int id)
         {
             int teacherId = GetCurrentUserId();
-            var result = await _lessonService.DeleteLessonAsync(id, teacherId);
+            bool isAdmin = IsCurrentUserAdmin();
+            var result = await _lessonService.DeleteLessonAsync(id, teacherId, isAdmin);
             return result switch
             {
                 Enums.LessonOperationResult.NotFound => NotFound(new { message = "Lesson not found" }),
@@ -81,11 +83,12 @@ namespace LMS.Controllers
         }
 
         [HttpPatch("/api/lessons/{id}/publish")]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> PublishLesson(int id)
         {
             int teacherId = GetCurrentUserId();
-            var result = await _lessonService.PublishLessonAsync(id, teacherId);
+            bool isAdmin = IsCurrentUserAdmin();
+            var result = await _lessonService.PublishLessonAsync(id, teacherId, isAdmin);
             return result switch
             {
                 Enums.LessonOperationResult.NotFound => NotFound(new { message = "Lessont Not Found" }),
@@ -98,11 +101,12 @@ namespace LMS.Controllers
         }
 
         [HttpPatch("/api/lessons/{id}/unpublish")]
-        [Authorize(Roles ="Teacher")]
-        public async Task<IActionResult> UnpublishLesson (int id)
+        [Authorize(Roles = "Teacher,Admin")]
+        public async Task<IActionResult> UnpublishLesson(int id)
         {
             int teacherId = GetCurrentUserId();
-            var result = await _lessonService.UnpublishLessonAsync(id, teacherId);
+            bool isAdmin = IsCurrentUserAdmin();
+            var result = await _lessonService.UnpublishLessonAsync(id, teacherId, isAdmin);
             return result switch
             {
                 Enums.LessonOperationResult.NotFound => NotFound(new { message = "Lesson Not Found" }),
@@ -116,6 +120,10 @@ namespace LMS.Controllers
             var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return int.Parse(idClaim!);
         }
+
+        private bool IsCurrentUserAdmin()
+        {
+            return User.IsInRole("Admin");
+        }
     }
 }
-

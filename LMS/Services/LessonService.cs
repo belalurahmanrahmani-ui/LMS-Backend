@@ -12,15 +12,15 @@ namespace LMS.Services
         private readonly LmsDbContext _context;
         public LessonService(LmsDbContext Context)
         {
-             _context = Context;
+            _context = Context;
         }
         public async Task<(LessonOperationResult Result, LessonResponseDto? Lesson)> CreateLessonAsync(int courseId, CreateLessonDto dto, int teacherId)
         {
             var course = await _context.Courses.FindAsync(courseId);
             if (course == null)
                 return (LessonOperationResult.CourseNotFound, null);
-            if(course.TeacherId != teacherId)
-                return(LessonOperationResult.Forbidden, null);
+            if (course.TeacherId != teacherId)
+                return (LessonOperationResult.Forbidden, null);
             var lesson = new Lesson
             {
                 CourseId = courseId,
@@ -31,20 +31,20 @@ namespace LMS.Services
                 Order = dto.Order,
                 IsPublished = false
             };
-            _context.Lessons.Add(lesson);  
+            _context.Lessons.Add(lesson);
             await _context.SaveChangesAsync();
             var createdLesson = await GetLessonByIdAsync(lesson.Id);
             return (LessonOperationResult.Success, createdLesson);
         }
 
-        public async Task<LessonOperationResult> DeleteLessonAsync(int id, int teacherId)
+        public async Task<LessonOperationResult> DeleteLessonAsync(int id, int teacherId, bool isAdmin)
         {
             var lesson = await _context.Lessons
                 .Include(l => l.Course)
                 .FirstOrDefaultAsync(l => l.Id == id);
             if (lesson == null)
                 return LessonOperationResult.NotFound;
-            if (lesson.Course.TeacherId != teacherId)
+            if (!isAdmin && lesson.Course.TeacherId != teacherId)
                 return LessonOperationResult.Forbidden;
             _context.Lessons.Remove(lesson);
             await _context.SaveChangesAsync();
@@ -68,21 +68,21 @@ namespace LMS.Services
                 .ToListAsync();
         }
 
-        public async Task<LessonOperationResult> PublishLessonAsync(int id, int teacherId)
+        public async Task<LessonOperationResult> PublishLessonAsync(int id, int teacherId, bool isAdmin)
         {
             var lesson = await _context.Lessons
                 .Include(l => l.Course)
                 .FirstOrDefaultAsync(l => l.Id == id);
             if (lesson == null)
                 return LessonOperationResult.NotFound;
-            if (lesson.Course.TeacherId != teacherId)
+            if (!isAdmin && lesson.Course.TeacherId != teacherId)
                 return LessonOperationResult.Forbidden;
             lesson.IsPublished = true;
             await _context.SaveChangesAsync();
-            return LessonOperationResult.Success;   
+            return LessonOperationResult.Success;
         }
 
-        public async Task<LessonOperationResult> UnpublishLessonAsync(int id, int teacherId)
+        public async Task<LessonOperationResult> UnpublishLessonAsync(int id, int teacherId, bool isAdmin)
         {
             var lesson = await _context.Lessons
                 .Include(l => l.Course)
@@ -91,23 +91,22 @@ namespace LMS.Services
             if (lesson == null)
                 return LessonOperationResult.NotFound;
 
-            if (lesson.Course.TeacherId != teacherId)
+            if (!isAdmin && lesson.Course.TeacherId != teacherId)
                 return LessonOperationResult.Forbidden;
 
             lesson.IsPublished = false;
             await _context.SaveChangesAsync();
             return LessonOperationResult.Success;
-
         }
 
-        public async Task<LessonOperationResult> UpdateLessonAsync(int id, UpdateLessonDto dto, int teacherId)
+        public async Task<LessonOperationResult> UpdateLessonAsync(int id, UpdateLessonDto dto, int teacherId, bool isAdmin)
         {
             var lesson = await _context.Lessons
                 .Include(l => l.Course)
                 .FirstOrDefaultAsync(l => l.Id == id);
             if (lesson == null)
                 return LessonOperationResult.NotFound;
-            if (lesson.Course.TeacherId != teacherId)
+            if (!isAdmin && lesson.Course.TeacherId != teacherId)
                 return LessonOperationResult.Forbidden;
             lesson.Title = dto.Title;
             lesson.Description = dto.Description;
@@ -117,7 +116,6 @@ namespace LMS.Services
 
             await _context.SaveChangesAsync();
             return LessonOperationResult.Success;
-
         }
 
         private static readonly System.Linq.Expressions.Expression<Func<Lesson, LessonResponseDto>> ProjectToDto = l => new LessonResponseDto

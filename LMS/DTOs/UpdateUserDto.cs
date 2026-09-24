@@ -11,6 +11,8 @@ namespace LMS.DTOs
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Format")]
         public string Email { get; set; } = string.Empty;
+
+        [Url(ErrorMessage = "Profile image must be a valid URL")]
         public string? ProfileImage { get; set; }
     }
 }
