@@ -8,5 +8,6 @@ namespace LMS.Services.Interface
         Task<LessonProgressOperationResult> CompleteLessonAsync(int studentId, int lessonId);
         Task<(LessonProgressOperationResult Result, CourseProgressResponseDto? Progress)> GetCourseProgressAsync(int studentId, int courseId);
         Task<List<CourseProgressResponseDto>> GetMyProgressAsync(int studentId);
+        Task<List<CourseStudentResponseDto>?> GetCourseStudentsAsync(int courseId, int teacherId);
     }
 }

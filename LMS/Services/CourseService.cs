@@ -52,11 +52,6 @@ namespace LMS.Services
             return CourseOperationResult.Sucses;
         }
 
-<<<<<<< HEAD
-=======
-        
-
->>>>>>> edbfb03e8b76ab0e31d5edac967d6201e59d79cc
         public async Task<CourseResponseDto?> GetCourseByIdAsync(int id)
         {
             return await _context.Courses
@@ -151,22 +146,31 @@ namespace LMS.Services
                 .ToListAsync();
         }
 
-        public async Task<CourseDetailsDto?> GetCourseDetailsAsync(int id)
+        public async Task<CourseDetailsDto?> GetCourseDetailsAsync(
+     int id, int? currentUserId, bool isAdmin)
         {
             var course = await _context.Courses
-                .Where(c => c.Id == id && c.IsPublished)
+                .Where(c => c.Id == id &&
+                            (c.IsPublished || isAdmin || c.TeacherId == currentUserId))
                 .Include(c => c.Teacher)
                 .Include(c => c.Category)
                 .Include(c => c.Lessons)
                 .FirstOrDefaultAsync();
+
             if (course == null)
                 return null;
-            var publishedLessons = course.Lessons
-                .Where(l => l.IsPublished)
+
+            // صاحب دوره و Admin همه‌ی درس‌ها را می‌بینند؛ بقیه فقط درس‌های منتشرشده
+            var canSeeDraftLessons = isAdmin || course.TeacherId == currentUserId;
+
+            var visibleLessons = course.Lessons
+                .Where(l => canSeeDraftLessons || l.IsPublished)
                 .OrderBy(l => l.Order)
                 .ToList();
+
             var enrollmentCount = await _context.Enrollments
                 .CountAsync(e => e.CourseId == id);
+
             return new CourseDetailsDto
             {
                 Id = course.Id,
@@ -176,10 +180,10 @@ namespace LMS.Services
                 Price = course.Price,
                 TeacherName = course.Teacher.FullName,
                 CategoryName = course.Category.Name,
-                LessonCount = publishedLessons.Count,
-                TotalDuration = publishedLessons.Sum(l => l.Duration),
+                LessonCount = visibleLessons.Count,
+                TotalDuration = visibleLessons.Sum(l => l.Duration),
                 EnrollmentCount = enrollmentCount,
-                Lessons = publishedLessons.Select(l => new LessonSummaryDto
+                Lessons = visibleLessons.Select(l => new LessonSummaryDto
                 {
                     Id = l.Id,
                     Title = l.Title,
@@ -187,10 +191,6 @@ namespace LMS.Services
                     Order = l.Order
                 }).ToList()
             };
-<<<<<<< HEAD
-=======
-
->>>>>>> edbfb03e8b76ab0e31d5edac967d6201e59d79cc
         }
 
         private static readonly Expression<Func<Course, CourseResponseDto>> ProjectToDto = c => new CourseResponseDto

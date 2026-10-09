@@ -30,7 +30,12 @@ namespace LMS.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetCourseById(int id)
         {
-            var course = await _courseService.GetCourseDetailsAsync(id);
+            // هویت کاربر را اگر Token داشت بخوان (Endpoint همچنان عمومی است)
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int? currentUserId = int.TryParse(userIdClaim, out var parsedId) ? parsedId : null;
+            var isAdmin = User.IsInRole("Admin");
+
+            var course = await _courseService.GetCourseDetailsAsync(id, currentUserId, isAdmin);
             if (course == null)
                 return NotFound(new { message = "Course not found" });
             return Ok(course);

@@ -117,5 +117,43 @@ namespace LMS.Services
 
             return result;
         }
+        public async Task<List<CourseStudentResponseDto>?> GetCourseStudentsAsync(int courseId, int teacherId)
+        {
+            
+            bool isOwner = await _context.Courses
+                .AnyAsync(c => c.Id == courseId && c.TeacherId == teacherId);
+
+            if (!isOwner)
+            {
+                return null;
+            }
+
+            int totalLessons = await _context.Lessons
+                .CountAsync(l => l.CourseId == courseId && l.IsPublished);
+
+            var students = await _context.Enrollments
+                .Where(e => e.CourseId == courseId)
+                .OrderBy(e => e.EnrolledAt)
+                .Select(e => new CourseStudentResponseDto
+                {
+                    StudentId = e.StudentId,
+                    FullName = e.Student.FullName,
+                    Email = e.Student.Email,
+                    EnrolledAt = e.EnrolledAt,
+                    TotalLessons = totalLessons,
+                    CompletedLessons = e.Student.LessonProgresses
+                        .Count(lp => lp.Lesson.CourseId == courseId && lp.Lesson.IsPublished)
+                })
+                .ToListAsync();
+
+            foreach (var student in students)
+            {
+                student.ProgressPercentage = totalLessons == 0
+                    ? 0
+                    : Math.Round((double)student.CompletedLessons / totalLessons * 100, 1);
+            }
+
+            return students;
+        }
     }
 }
