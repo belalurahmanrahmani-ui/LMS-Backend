@@ -155,5 +155,22 @@ namespace LMS.Services
 
             return students;
         }
+        public async Task<List<int>?> GetCompletedLessonIdsAsync(int studentId, int courseId)
+        {
+            bool isEnrolled = await _context.Enrollments
+                .AnyAsync(e => e.StudentId == studentId && e.CourseId == courseId);
+
+            if (!isEnrolled)
+            {
+                return null;
+            }
+
+            return await _context.LessonProgresses
+                .Where(lp => lp.StudentId == studentId
+                          && lp.Lesson.CourseId == courseId
+                          && lp.Lesson.IsPublished)
+                .Select(lp => lp.LessionId)
+                .ToListAsync();
+        }
     }
 }

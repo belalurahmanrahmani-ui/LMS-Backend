@@ -4,6 +4,8 @@ using LMS.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using LMS.Enums;
+using LMS.Extensions;
 
 namespace LMS.Controllers
 {
@@ -11,26 +13,55 @@ namespace LMS.Controllers
     public class MaterialController : ControllerBase
     {
         private readonly IMaterialService _materialService;
-        public MaterialController(IMaterialService materialService)
+        private readonly ICourseAccessService _courseAccessService;
+        public MaterialController(IMaterialService materialService , ICourseAccessService courseAccessService)
         {
             _materialService = materialService;
+            _courseAccessService = courseAccessService;
         }
 
         [HttpGet("/api/lessons/{lessonId}/materials")]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> GetMaterialsByLesson(int lessonId)
         {
+            var userId = User.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var access = await _courseAccessService.GetLessonAccessAsync(lessonId, userId.Value, User.GetRole());
+            if (access == CourseAccess.None)
+            {
+                return NotFound(new { message = "Lesson Not Found" });
+            }
+
             var materials = await _materialService.GetMaterialsByLessonAsync(lessonId);
             return Ok(materials);
         }
 
         [HttpGet("/api/materials/{id}")]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> GetMaterialById(int id)
         {
+            var userId = User.GetUserId();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
             var material = await _materialService.GetMaterialByIdAsync(id);
             if (material == null)
+            {
                 return NotFound(new { message = "Material not found" });
+            }
+
+            var access = await _courseAccessService.GetLessonAccessAsync(material.LessonId, userId.Value, User.GetRole());
+            if (access == CourseAccess.None)
+            {
+                return NotFound(new { message = "Material not found" });
+            }
+
             return Ok(material);
         }
 
