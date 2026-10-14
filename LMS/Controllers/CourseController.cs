@@ -50,6 +50,14 @@ namespace LMS.Controllers
             return Ok(course);
         }
 
+        [HttpGet("/api/Admin/courses")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllCoursesForAdmin()
+        {
+            var courses = await _courseService.GetAllCoursesForAdminAsync();
+            return Ok(courses);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> CreateCourse([FromBody] CreateCourseDto dto)
@@ -73,7 +81,12 @@ namespace LMS.Controllers
             {
                 CourseOperationResult.NotFound => NotFound(new { message = "Course not found" }),
                 CourseOperationResult.Forbidden => Forbid(),
+                CourseOperationResult.HasStudents => Conflict(new
+                {
+                    message = "This course has enrolled students and cannot be deleted. Unpublish it instead."
+                }),
                 CourseOperationResult.Sucses => NoContent(),
+
                 _ => StatusCode(500, new { message = "An unexpected error occurred." })
             };
         }
@@ -92,6 +105,7 @@ namespace LMS.Controllers
                 CourseOperationResult.Forbidden => Forbid(),
                 CourseOperationResult.InvalidCategor => BadRequest(new { message = "invlid category" }),
                 CourseOperationResult.Sucses => NoContent(),
+
                 _ => StatusCode(500, new { message = "an unexpected error ocured" })
             };
         }
@@ -110,6 +124,7 @@ namespace LMS.Controllers
                 CourseOperationResult.Forbidden => Forbid(),
                 CourseOperationResult.InvalidCategor => BadRequest(new { message = "invlid category" }),
                 CourseOperationResult.Sucses => NoContent(),
+
                 _ => StatusCode(500, new { message = "an unexpected error ocured" })
             };
         }

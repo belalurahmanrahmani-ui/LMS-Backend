@@ -15,5 +15,6 @@ namespace LMS.Services.Interface
         Task<CourseOperationResult> PublishCourseAsync(int id, int teacherId, bool isAdmin);
         Task<CourseOperationResult> UnpublishCourseAsync(int id, int teacherId, bool isAdmin);
         Task<CourseDetailsDto?> GetCourseDetailsAsync(int id, int? currentUserId, bool isAdmin);
+        Task<List<CourseResponseDto>> GetAllCoursesForAdminAsync();
     }
 }

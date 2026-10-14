@@ -47,6 +47,11 @@ namespace LMS.Services
                 return CourseOperationResult.NotFound;
             if (!isAdmin && course.TeacherId != teacherId)
                 return CourseOperationResult.Forbidden;
+            bool hasStudents = await _context.Enrollments.AnyAsync(e => e.CourseId == id)
+            || await _context.LessonProgresses.AnyAsync(lp => lp.Lesson.CourseId == id);
+
+            if (hasStudents)
+                return CourseOperationResult.HasStudents;
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
             return CourseOperationResult.Sucses;
@@ -191,6 +196,13 @@ namespace LMS.Services
                     Order = l.Order
                 }).ToList()
             };
+        }
+        public async Task<List<CourseResponseDto>> GetAllCoursesForAdminAsync()
+        {
+            return await _context.Courses
+                .OrderByDescending(c => c.CreatedAt)
+                .Select(ProjectToDto)
+                .ToListAsync();
         }
 
         private static readonly Expression<Func<Course, CourseResponseDto>> ProjectToDto = c => new CourseResponseDto
