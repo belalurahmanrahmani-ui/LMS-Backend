@@ -49,6 +49,20 @@ namespace LMS.Controllers
             return Ok(users);
         }
 
+        [HttpPost("users")]
+        public async Task<IActionResult> CreateUser([FromBody] AdminCreateUserDto dto)
+        {
+            try
+            {
+                var created = await _userService.CreateUserAsync(dto);
+                return Created($"/api/Admin/users/{created.Id}", created);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
+        }
+
         [HttpGet("users/{id}")]
         public async Task<IActionResult> GetUserByIdAsync(int id)
         {

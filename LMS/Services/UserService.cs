@@ -1,6 +1,8 @@
 ﻿using LMS.Data;
 using LMS.DTOs;
+using LMS.Entities;
 using LMS.Enums;
+using LMS.Helpers;
 using LMS.Services.Interface;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,9 +11,42 @@ namespace LMS.Services
     public class UserService : IUserService
     {
         private readonly LmsDbContext _dbContext;
-        public UserService(LmsDbContext context)
+        private readonly IPasswordHasher _passwordHasher;
+        public UserService(LmsDbContext context,IPasswordHasher passwordHasher)
         {
             _dbContext = context;
+            _passwordHasher = passwordHasher;
+        }
+        public async Task<UserResponseDto> CreateUserAsync(AdminCreateUserDto dto)
+        {
+            bool emailTaken = await _dbContext.Users
+                .AnyAsync(u => u.Email.ToLower() == dto.Email.ToLower());
+            if (emailTaken)
+                throw new InvalidOperationException("Email is already registered.");
+
+            var user = new User
+            {
+                FullName = dto.FullName,
+                Email = dto.Email,
+                PasswordHash = _passwordHasher.HasPassword(dto.Password),
+                Role = dto.Role,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _dbContext.Users.Add(user);
+            await _dbContext.SaveChangesAsync();
+
+            return new UserResponseDto
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                Role = user.Role.ToString(),
+                ProfileImage = user.ProfileImage,
+                IsActive = user.IsActive,
+                CreatedAt = user.CreatedAt
+            };
         }
 
         public async Task<bool> ChangeRoleAsync(int id, UserRole newRole)
@@ -52,6 +87,7 @@ namespace LMS.Services
 
 
         }
+
 
         
 
