@@ -152,7 +152,7 @@ namespace LMS.Services
         }
 
         public async Task<CourseDetailsDto?> GetCourseDetailsAsync(
-     int id, int? currentUserId, bool isAdmin)
+        int id, int? currentUserId, bool isAdmin)
         {
             var course = await _context.Courses
                 .Where(c => c.Id == id &&
