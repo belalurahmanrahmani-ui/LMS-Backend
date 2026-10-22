@@ -85,12 +85,9 @@ builder.Services.AddAuthentication(options =>
     };
 
 });
-var allowedOrigins = new[]
-{
-    "http://localhost:3000",   // Next.js در حالت Development
-    // بعداً در Day 10، آدرس Production اینجا اضافه می‌شه
-};
-
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? Array.Empty<string>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("LmsCorsPolicy", policy =>
@@ -123,7 +120,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-app.MapControllers();
 
 app.Run();
 
