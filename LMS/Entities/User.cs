@@ -1,4 +1,5 @@
 ﻿using LMS.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace LMS.Entities
 {
@@ -12,6 +13,8 @@ namespace LMS.Entities
         public string? ProfileImage { get; set; }
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+       
+        
 
         /// Navigation Properties (Relationships) 
         public ICollection<Course> Course { get; set; } = new List<Course>();

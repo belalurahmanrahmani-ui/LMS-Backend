@@ -82,7 +82,8 @@ namespace LMS.Services
                     Role = u.Role.ToString(),
                     ProfileImage = u.ProfileImage,
                     IsActive = u.IsActive,
-                    CreatedAt = u.CreatedAt
+                    CreatedAt = u.CreatedAt,
+                   
                 }).ToListAsync();
 
 
@@ -103,7 +104,8 @@ namespace LMS.Services
                     Role = u.Role.ToString(),
                     ProfileImage = u.ProfileImage,
                     IsActive = u.IsActive,
-                    CreatedAt = u.CreatedAt
+                    CreatedAt = u.CreatedAt,
+                   
                 }).FirstOrDefaultAsync();
             
             
@@ -134,6 +136,7 @@ namespace LMS.Services
             user.FullName = dto.FullName;
             user.Email = dto.Email;
             user.ProfileImage = dto.ProfileImage;
+            
             await _dbContext.SaveChangesAsync();
 
             return new UserResponseDto
@@ -144,7 +147,8 @@ namespace LMS.Services
                 Role = user.Role.ToString(),
                 ProfileImage = user.ProfileImage,
                 IsActive = user.IsActive,
-                CreatedAt = user.CreatedAt
+                CreatedAt = user.CreatedAt,
+                
             };
         }
     }

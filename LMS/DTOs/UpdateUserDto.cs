@@ -14,5 +14,6 @@ namespace LMS.DTOs
 
         [Url(ErrorMessage = "Profile image must be a valid URL")]
         public string? ProfileImage { get; set; }
+       
     }
 }

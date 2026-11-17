@@ -39,7 +39,7 @@ namespace LMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("LMS.Entities.Course", b =>
@@ -85,7 +85,7 @@ namespace LMS.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", (string)null);
                 });
 
             modelBuilder.Entity("LMS.Entities.Enrollment", b =>
@@ -112,7 +112,7 @@ namespace LMS.Migrations
                     b.HasIndex("StudentId", "CourseId")
                         .IsUnique();
 
-                    b.ToTable("Enrollments");
+                    b.ToTable("Enrollments", (string)null);
                 });
 
             modelBuilder.Entity("LMS.Entities.Lesson", b =>
@@ -149,7 +149,7 @@ namespace LMS.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Lessons");
+                    b.ToTable("Lessons", (string)null);
                 });
 
             modelBuilder.Entity("LMS.Entities.LessonProgress", b =>
@@ -179,7 +179,7 @@ namespace LMS.Migrations
                     b.HasIndex("StudentId", "LessionId")
                         .IsUnique();
 
-                    b.ToTable("LessonProgresses");
+                    b.ToTable("LessonProgresses", (string)null);
                 });
 
             modelBuilder.Entity("LMS.Entities.Material", b =>
@@ -209,7 +209,7 @@ namespace LMS.Migrations
 
                     b.HasIndex("LessonId");
 
-                    b.ToTable("Materials");
+                    b.ToTable("Materials", (string)null);
                 });
 
             modelBuilder.Entity("LMS.Entities.RefreshToken", b =>
@@ -240,7 +240,7 @@ namespace LMS.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("LMS.Entities.User", b =>
@@ -280,7 +280,7 @@ namespace LMS.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("LMS.Entities.Course", b =>
