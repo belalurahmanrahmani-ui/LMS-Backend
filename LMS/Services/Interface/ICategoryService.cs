@@ -11,5 +11,6 @@ namespace LMS.Services.Interface
         Task<CategoryResponseDto?> CreateCategoryAsync(CreateCategoryDto dto);
         Task<CategoryResponseDto> UpdateCategoryAsync(int id,UpdateCategoryDto dto);
         Task<CategoryDeleteResult> DeleteCategoryAsync(int id);
+        
     }
 }

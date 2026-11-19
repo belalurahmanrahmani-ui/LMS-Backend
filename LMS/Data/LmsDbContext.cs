@@ -17,6 +17,7 @@ namespace LMS.Data
         public DbSet<LessonProgress> LessonProgresses { get; set; }
         public DbSet<Material> Materials { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -112,6 +113,7 @@ namespace LMS.Data
                      .OnDelete(DeleteBehavior.Cascade); //  که یوزر دلیت شی نو توکن دی هم دلیت شی 
 
             });
+            
 
         }
     }

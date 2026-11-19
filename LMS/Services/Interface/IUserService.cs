@@ -12,5 +12,6 @@ namespace LMS.Services.Interface
         Task<bool> SetActiveStatusAsync(int id, bool isActive);
         Task<bool> ChangeRoleAsync(int id, UserRole newRole);
         Task<UserResponseDto> CreateUserAsync(AdminCreateUserDto dto);
+        Task<UserRole?> GetUserRoleAsync(int id);
     }
 }

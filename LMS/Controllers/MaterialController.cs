@@ -123,7 +123,8 @@ namespace LMS.Controllers
 
         private bool IsCurrentUserAdmin()
         {
-            return User.IsInRole("Admin");
+            return User.IsInRole("Admin it added this for test ");
+
         }
     }
 }

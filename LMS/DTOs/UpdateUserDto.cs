@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LMS.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace LMS.DTOs
 {
@@ -14,6 +15,9 @@ namespace LMS.DTOs
 
         [Url(ErrorMessage = "Profile image must be a valid URL")]
         public string? ProfileImage { get; set; }
-       
+
+        [Required(ErrorMessage = "Role is required")]
+        [EnumDataType(typeof(UserRole), ErrorMessage = "Invalid role")]
+        public UserRole Role { get; set; }
     }
 }

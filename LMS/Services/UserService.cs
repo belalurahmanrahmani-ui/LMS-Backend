@@ -17,6 +17,14 @@ namespace LMS.Services
             _dbContext = context;
             _passwordHasher = passwordHasher;
         }
+
+        public async Task<UserRole?> GetUserRoleAsync(int id)
+        {
+            return await _dbContext.Users
+                .Where(u => u.Id == id)
+                .Select(u => (UserRole?)u.Role)
+                .FirstOrDefaultAsync();
+        }
         public async Task<UserResponseDto> CreateUserAsync(AdminCreateUserDto dto)
         {
             bool emailTaken = await _dbContext.Users
@@ -136,6 +144,7 @@ namespace LMS.Services
             user.FullName = dto.FullName;
             user.Email = dto.Email;
             user.ProfileImage = dto.ProfileImage;
+            user.Role = dto.Role;
             
             await _dbContext.SaveChangesAsync();
 
